@@ -20,6 +20,7 @@ linters:
     - fatcontext
     - gci
     - gocheckcompilerdirectives
+    - gocritic
     - goprintffuncname
     - gosimple
     - grouper
@@ -47,7 +48,6 @@ linters:
 
     # Check
     # - exhaustive
-    # - gocritic
     # - gosec
     # - revive
     # - staticcheck
@@ -65,6 +65,19 @@ linters-settings:
     ignorePackageGlobs:
       - encoding/*
       - github.com/go-json-experiment/*
+
+  gocritic:
+    enabled-checks:
+      - emptyFallthrough
+    disabled-checks:
+      - appendAssign
+      - assignOp
+      - commentFormatting
+      - dupBranchBody
+      - elseif
+      - ifElseChain
+      - singleCaseSwitch
+      - valSwap
 #   revive:
 #     enable-all-rules: true
 #     rules:

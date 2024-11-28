@@ -7930,7 +7930,7 @@ func (c *Checker) checkSatisfiesExpressionWorker(expression *ast.Node, target *a
 	if c.isErrorType(targetType) {
 		return targetType
 	}
-	errorNode := ast.FindAncestor(target.Parent, func(n *ast.Node) bool { return ast.IsSatisfiesExpression(n) })
+	errorNode := ast.FindAncestor(target.Parent, ast.IsSatisfiesExpression)
 	c.checkTypeAssignableToAndOptionallyElaborate(exprType, targetType, errorNode, expression, diagnostics.Type_0_does_not_satisfy_the_expected_type_1, nil)
 	return exprType
 }

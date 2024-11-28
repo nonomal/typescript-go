@@ -114,12 +114,16 @@ func parseArgs() *cliOptions {
 }
 
 func main() {
+	os.Exit(runMain())
+}
+
+func runMain() int {
 	if args := os.Args[1:]; len(args) > 0 {
 		switch args[0] {
 		case "tsc":
-			os.Exit(int(execute.CommandLine(newSystem(), nil, args[1:])))
+			return int(execute.CommandLine(newSystem(), nil, args[1:]))
 		case "lsp":
-			os.Exit(runLSP(args[1:]))
+			return runLSP(args[1:])
 		}
 	}
 	opts := parseArgs()
@@ -134,7 +138,7 @@ func main() {
 	currentDirectory, err := os.Getwd()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error getting current directory: %v\n", err)
-		os.Exit(1)
+		return 1
 	}
 
 	fs := bundled.WrapFS(vfs.FromOS())
@@ -145,7 +149,7 @@ func main() {
 		configFilePath = tspath.CombinePaths(configFilePath, "tsconfig.json")
 		if !fs.FileExists(configFilePath) {
 			fmt.Fprintf(os.Stderr, "Error: The file %v does not exist.\n", configFilePath)
-			os.Exit(1)
+			return 1
 		}
 	}
 
@@ -170,7 +174,7 @@ func main() {
 
 	if compilerOptions.ListFilesOnly.IsTrue() {
 		listFiles(program)
-		os.Exit(0)
+		return 0
 	}
 
 	if compilerOptions.ShowConfig.IsTrue() {
@@ -178,9 +182,9 @@ func main() {
 		enc.SetIndent("", "    ")
 		if err := enc.Encode(compilerOptions); err != nil {
 			fmt.Fprintf(os.Stderr, "Error encoding JSON: %v\n", err)
-			os.Exit(1)
+			return 1
 		}
-		os.Exit(0)
+		return 0
 	}
 
 	var bindTime, checkTime time.Duration
@@ -188,7 +192,7 @@ func main() {
 	diagnostics := program.GetOptionsDiagnostics()
 	if len(diagnostics) != 0 {
 		printDiagnostics(diagnostics, host, compilerOptions)
-		os.Exit(1)
+		return 1
 	}
 
 	diagnostics = program.GetSyntacticDiagnostics(nil)
@@ -250,6 +254,8 @@ func main() {
 	stats.add("Memory used", fmt.Sprintf("%vK", memStats.Alloc/1024))
 
 	stats.print()
+
+	return 0
 }
 
 type tableRow struct {

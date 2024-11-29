@@ -5,9 +5,6 @@ linters:
   enable:
     # Enabled
     - asasalint
-    - inamedparam
-    - nakedret
-    - govet
     - bidichk
     - bodyclose
     - canonicalheader
@@ -23,17 +20,21 @@ linters:
     - gocritic
     - goprintffuncname
     - gosimple
+    - govet
     - grouper
+    - inamedparam
     - ineffassign
     - intrange
     - makezero
     - mirror
     - musttag
+    - nakedret
     - nolintlint
     - paralleltest
     - perfsprint
     - predeclared
     - reassign
+    - staticcheck
     - tenv
     - testableexamples
     - tparallel
@@ -50,9 +51,7 @@ linters:
     # - exhaustive
     # - gosec
     # - revive
-    # - staticcheck
     # - stylecheck
-    # - testifylint
     # - unparam
     # - unused
 
@@ -78,6 +77,13 @@ linters-settings:
       - ifElseChain
       - singleCaseSwitch
       - valSwap
+
+  staticcheck:
+    checks:
+      - '*'
+      - '-SA9003'
+      - '-SA1019' # TODO: reenable
+
 #   revive:
 #     enable-all-rules: true
 #     rules:

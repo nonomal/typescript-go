@@ -266,7 +266,7 @@ var harnessCommandLineOptions = []*tsoptions.CommandLineOption{
 
 func getHarnessOption(name string) *tsoptions.CommandLineOption {
 	return core.Find(harnessCommandLineOptions, func(option *tsoptions.CommandLineOption) bool {
-		return strings.ToLower(option.Name) == strings.ToLower(name)
+		return strings.EqualFold(option.Name, name)
 	})
 }
 
@@ -618,7 +618,7 @@ func getValueOfOptionString(t *testing.T, option string, value string) tsoptions
 
 func getCommandLineOption(option string) *tsoptions.CommandLineOption {
 	return core.Find(tsoptions.OptionsDeclarations, func(optionDecl *tsoptions.CommandLineOption) bool {
-		return strings.ToLower(optionDecl.Name) == strings.ToLower(option)
+		return strings.EqualFold(optionDecl.Name, option)
 	})
 }
 

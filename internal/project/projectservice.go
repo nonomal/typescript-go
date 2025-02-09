@@ -162,6 +162,7 @@ func (s *ProjectService) ApplyChangesInOpenFiles(
 	}
 
 	if assignOrphanScriptInfosToInferredProject {
+		_ = assignOrphanScriptInfosToInferredProject
 		// !!!
 		// s.assignOrphanScriptInfosToInferredProject()
 	}

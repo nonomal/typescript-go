@@ -278,7 +278,7 @@ export const lint = task({
     name: "lint",
     run: async () => {
         await buildCustomLinter();
-        await $`${customLinterPath} run ${options.fix ? ["--fix"] : []} ${isCI ? ["--timeout=5m"] : []}`;
+        await $`${customLinterPath} run --show-stats ${options.fix ? ["--fix"] : []} ${isCI ? ["--timeout=5m"] : []}`;
     },
 });
 

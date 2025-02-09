@@ -972,7 +972,7 @@ func parseConfig(
 	if ownConfig.extendedConfigPath != nil {
 		// copy the resolution stack so it is never reused between branches in potential diamond-problem scenarios.
 		resolutionStack = append(resolutionStack, resolvedPath)
-		var result *extendsResult = &extendsResult{
+		result := &extendsResult{
 			options: &core.CompilerOptions{},
 		}
 		if reflect.TypeOf(ownConfig.extendedConfigPath).Kind() == reflect.String {
@@ -1197,7 +1197,7 @@ func parseJsonConfigFileContentWorker(
 	}
 
 	getProjectReferences := func(basePath string) []core.ProjectReference {
-		var projectReferences []core.ProjectReference = []core.ProjectReference{}
+		projectReferences := []core.ProjectReference{}
 		referencesOfRaw := getPropFromRaw("references", func(element any) bool { return reflect.TypeOf(element).Kind() == reflect.Map }, "object")
 		if referencesOfRaw.sliceValue != nil {
 			for _, reference := range referencesOfRaw.sliceValue {

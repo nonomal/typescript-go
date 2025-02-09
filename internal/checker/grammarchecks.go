@@ -1507,7 +1507,7 @@ func (c *Checker) checkGrammarBreakOrContinueStatement(node *ast.Node) bool {
 		panic(fmt.Sprintf("Unexpected node kind %q", node.Kind))
 	}
 
-	var current *ast.Node = node
+	current := node
 	for current != nil {
 		if ast.IsFunctionLikeOrClassStaticBlockDeclaration(current) {
 			return c.grammarErrorOnNode(node, diagnostics.Jump_target_cannot_cross_function_boundary)

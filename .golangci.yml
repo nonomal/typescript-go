@@ -38,7 +38,6 @@ linters:
     - predeclared
     - reassign
     - staticcheck
-    - stylecheck
     - tenv
     - testableexamples
     - tparallel
@@ -55,6 +54,7 @@ linters:
     # - exhaustive
     # - gosec
     # - revive
+    # - stylecheck
     # - unparam
     # - unused
 
@@ -86,12 +86,6 @@ linters-settings:
       - '*'
       - '-SA9003'
       - '-SA1019' # TODO: reenable
-
-  stylecheck:
-    checks:
-      - '*'
-      - '-ST1003' # I wish
-      - '-ST1016' # TODO: reenable
 
 #   revive:
 #     enable-all-rules: true

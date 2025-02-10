@@ -1958,7 +1958,7 @@ func (c *Checker) getSwitchClauseTypeOfWitnesses(node *ast.Node) []string {
 
 // Return the combined not-equal type facts for all cases except those between the start and end indices.
 func (c *Checker) getNotEqualFactsFromTypeofSwitch(start int, end int, witnesses []string) TypeFacts {
-	facts := TypeFactsNone
+	var facts TypeFacts = TypeFactsNone
 	for i, witness := range witnesses {
 		if (i < start || i >= end) && witness != "" {
 			f, ok := typeofNEFacts[witness]

@@ -2,6 +2,7 @@
 
 run:
   allow-parallel-runners: true
+  timeout: 90s
 
 linters:
   disable-all: true

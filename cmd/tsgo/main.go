@@ -228,8 +228,12 @@ func runMain() int {
 	runtime.GC()
 	runtime.ReadMemStats(&memStats)
 
-	if !opts.devel.quiet && len(diagnostics) != 0 {
-		printDiagnostics(diagnostics, host, compilerOptions)
+	exitCode := 0
+	if len(diagnostics) != 0 {
+		if !opts.devel.quiet {
+			printDiagnostics(diagnostics, host, compilerOptions)
+		}
+		exitCode = 1
 	}
 
 	if compilerOptions.ListFiles.IsTrue() {
@@ -255,7 +259,7 @@ func runMain() int {
 
 	stats.print()
 
-	return 0
+	return exitCode
 }
 
 type tableRow struct {

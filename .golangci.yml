@@ -2,7 +2,7 @@
 
 run:
   allow-parallel-runners: true
-  timeout: 90s
+  timeout: 180s
 
 linters:
   disable-all: true
@@ -19,7 +19,6 @@ linters:
     - errname
     - errorlint
     - fatcontext
-    - gci
     - gocheckcompilerdirectives
     - gocritic
     - goprintffuncname

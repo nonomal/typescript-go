@@ -72,9 +72,7 @@ func newSyntheticRecursiveVisitor() *ast.NodeVisitor {
 			},
 		},
 	}
-	v.Visit = func(node *ast.Node) *ast.Node {
-		return v.VisitEachChild(node)
-	}
+	v.Visit = v.VisitEachChild
 	return &v
 }
 

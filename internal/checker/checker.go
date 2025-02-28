@@ -1530,11 +1530,13 @@ func (c *Checker) getSuggestedLibForNonExistentName(name string) string {
 	return ""
 }
 
-func (c *Checker) getPrimitiveAliasSymbols() {
-	var symbols []*ast.Symbol
-	for _, name := range []string{"string", "number", "boolean", "object", "bigint", "symbol"} {
+func (c *Checker) getPrimitiveAliasSymbols() []*ast.Symbol {
+	names := []string{"string", "number", "boolean", "object", "bigint", "symbol"}
+	symbols := make([]*ast.Symbol, 0, len(names))
+	for _, name := range names {
 		symbols = append(symbols, c.newSymbol(ast.SymbolFlagsTypeAlias, name))
 	}
+	return symbols
 }
 
 func (c *Checker) getSuggestedSymbolForNonexistentSymbol(location *ast.Node, outerName string, meaning ast.SymbolFlags) *ast.Symbol {

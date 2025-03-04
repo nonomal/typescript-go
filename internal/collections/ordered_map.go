@@ -11,9 +11,6 @@ import (
 	"reflect"
 	"slices"
 	"strconv"
-
-	json2 "github.com/go-json-experiment/json"
-	"github.com/go-json-experiment/json/jsontext"
 )
 
 // OrderedMap is an insertion ordered map.
@@ -280,37 +277,6 @@ func (m *OrderedMap[K, V]) UnmarshalJSON(data []byte) error {
 		} else {
 			return fmt.Errorf("cannot unmarshal key into Map[%v, ...]", reflect.TypeFor[K]())
 		}
-	}
-	return nil
-}
-
-func (m *OrderedMap[K, V]) UnmarshalJSONV2(dec *jsontext.Decoder, opts json2.Options) error {
-	token, err := dec.ReadToken()
-	if err != nil {
-		return err
-	}
-	if token.Kind() == 'n' { // jsontext.Null.Kind()
-		// By convention, to approximate the behavior of Unmarshal itself,
-		// Unmarshalers implement UnmarshalJSON([]byte("null")) as a no-op.
-		// https://pkg.go.dev/encoding/json#Unmarshaler
-		return nil
-	}
-	if token.Kind() != '{' { // jsontext.ObjectStart.Kind()
-		return errors.New("cannot unmarshal non-object JSON value into Map")
-	}
-	for dec.PeekKind() != '}' { // jsontext.ObjectEnd.Kind()
-		var key K
-		var value V
-		if err := json2.UnmarshalDecode(dec, &key, opts); err != nil {
-			return err
-		}
-		if err := json2.UnmarshalDecode(dec, &value, opts); err != nil {
-			return err
-		}
-		m.Set(key, value)
-	}
-	if _, err := dec.ReadToken(); err != nil {
-		return err
 	}
 	return nil
 }

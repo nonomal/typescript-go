@@ -1878,11 +1878,10 @@ func (p *Parser) parseErrorForMissingSemicolonAfter(node *ast.Node) {
 		return
 	}
 
+	// The user alternatively might have misspelled or forgotten to add a space after a common keyword.
 	viableKeywordSuggestions := core.Filter(scanner.AllKeywords(), func(keyword string) bool {
 		return len(keyword) > 2
 	})
-
-	// The user alternatively might have misspelled or forgotten to add a space after a common keyword.
 	suggestion := core.GetSpellingSuggestion(expressionText, viableKeywordSuggestions, core.Identity)
 	if suggestion == "" {
 		suggestion = getSpaceSuggestion(expressionText, viableKeywordSuggestions)

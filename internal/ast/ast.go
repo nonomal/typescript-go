@@ -8116,6 +8116,10 @@ func (node *JSDocDeprecatedTag) Clone(f *NodeFactory) *Node {
 	return updateNode(f.NewJSDocDeprecatedTag(node.TagName, node.Comment), node.AsNode())
 }
 
+func IsJSDocDeprecatedTag(node *Node) bool {
+	return node.Kind == KindJSDocDeprecatedTag
+}
+
 // JSDocSeeTag
 type JSDocSeeTag struct {
 	JSDocTagBase

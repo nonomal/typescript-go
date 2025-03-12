@@ -552,7 +552,7 @@ type Checker struct {
 	noImplicitThis                            bool
 	useUnknownInCatchVariables                bool
 	exactOptionalPropertyTypes                bool
-	canCollectSymbolAliasAccessabilityData    bool
+	canCollectSymbolAliasAccessibilityData    bool
 	arrayVariances                            []VarianceFlags
 	globals                                   ast.SymbolTable
 	globalSymbols                             []*ast.Symbol
@@ -828,7 +828,7 @@ func NewChecker(program Program) *Checker {
 	c.noImplicitThis = c.getStrictOptionValue(c.compilerOptions.NoImplicitThis)
 	c.useUnknownInCatchVariables = c.getStrictOptionValue(c.compilerOptions.UseUnknownInCatchVariables)
 	c.exactOptionalPropertyTypes = c.compilerOptions.ExactOptionalPropertyTypes == core.TSTrue
-	c.canCollectSymbolAliasAccessabilityData = c.compilerOptions.VerbatimModuleSyntax.IsFalseOrUnknown()
+	c.canCollectSymbolAliasAccessibilityData = c.compilerOptions.VerbatimModuleSyntax.IsFalseOrUnknown()
 	c.arrayVariances = []VarianceFlags{VarianceFlagsCovariant}
 	c.globals = make(ast.SymbolTable, countGlobalSymbols(c.files))
 	c.evaluate = createEvaluator(c.evaluateEntity)
@@ -2528,7 +2528,7 @@ func (c *Checker) checkConstructorDeclaration(node *ast.Node) {
 	// Constructors of classes with no extends clause may not contain super calls, whereas
 	// constructors of derived classes must contain at least one super call somewhere in their function body.
 	containingClassDecl := node.Parent
-	if getExtendsTypeNode(containingClassDecl) == nil {
+	if ast.GetExtendsHeritageClauseElement(containingClassDecl) == nil {
 		return
 	}
 	classExtendsNull := c.classDeclarationExtendsNull(containingClassDecl)
@@ -3939,7 +3939,7 @@ func (c *Checker) checkClassLikeDeclaration(node *ast.Node) {
 	c.checkTypeParameterListsIdentical(symbol)
 	c.checkFunctionOrConstructorSymbol(symbol)
 	c.checkObjectTypeForDuplicateDeclarations(node, true /*checkPrivateNames*/)
-	baseTypeNode := getExtendsTypeNode(node)
+	baseTypeNode := ast.GetExtendsHeritageClauseElement(node)
 	if baseTypeNode != nil {
 		c.checkSourceElements(baseTypeNode.TypeArguments())
 		baseTypes := c.getBaseTypes(classType)
@@ -3990,7 +3990,7 @@ func (c *Checker) checkClassLikeDeclaration(node *ast.Node) {
 		}
 	}
 	c.checkMembersForOverrideModifier(node, classType, typeWithThis, staticType)
-	implementedTypeNodes := getImplementsTypeNodes(node)
+	implementedTypeNodes := ast.GetImplementsHeritageClauseElements(node)
 	for _, typeRefNode := range implementedTypeNodes {
 		expr := typeRefNode.Expression()
 		if !ast.IsEntityNameExpression(expr) || ast.IsOptionalChain(expr) {
@@ -4310,7 +4310,7 @@ func (c *Checker) isPropertyAbstractOrInterface(declaration *ast.Node, baseDecla
 
 func (c *Checker) checkMembersForOverrideModifier(node *ast.Node, t *Type, typeWithThis *Type, staticType *Type) {
 	var baseWithThis *Type
-	baseTypeNode := getExtendsTypeNode(node)
+	baseTypeNode := ast.GetExtendsHeritageClauseElement(node)
 	if baseTypeNode != nil {
 		baseTypes := c.getBaseTypes(t)
 		if len(baseTypes) > 0 {
@@ -4613,7 +4613,7 @@ func (c *Checker) checkInterfaceDeclaration(node *ast.Node) {
 		}
 	}
 	c.checkObjectTypeForDuplicateDeclarations(node, false /*checkPrivateNames*/)
-	for _, heritageElement := range getExtendsTypeNodes(node) {
+	for _, heritageElement := range ast.GetExtendsHeritageClauseElements(node) {
 		expr := heritageElement.Expression()
 		if !ast.IsEntityNameExpression(expr) || ast.IsOptionalChain(expr) {
 			c.error(expr, diagnostics.An_interface_can_only_extend_an_identifier_Slashqualified_name_with_optional_type_arguments)
@@ -7338,7 +7338,7 @@ func (c *Checker) checkSuperExpression(node *ast.Node) *Type {
 	}
 	// at this point the only legal case for parent is ClassLikeDeclaration
 	classLikeDeclaration := container.Parent
-	if getExtendsTypeNode(classLikeDeclaration) == nil {
+	if ast.GetExtendsHeritageClauseElement(classLikeDeclaration) == nil {
 		c.error(node, diagnostics.X_super_can_only_be_referenced_in_a_derived_class)
 		return c.errorType
 	}
@@ -7873,7 +7873,7 @@ func (c *Checker) resolveCallExpression(node *ast.Node, candidatesOutArray *[]*S
 		if !c.isErrorType(superType) {
 			// In super call, the candidate signatures are the matching arity signatures of the base constructor function instantiated
 			// with the type arguments specified in the extends clause.
-			baseTypeNode := getExtendsTypeNode(ast.GetContainingClass(node))
+			baseTypeNode := ast.GetExtendsHeritageClauseElement(ast.GetContainingClass(node))
 			if baseTypeNode != nil {
 				baseConstructors := c.getInstantiatedConstructorsForTypeArguments(superType, baseTypeNode.TypeArguments(), baseTypeNode)
 				return c.resolveCall(node, baseConstructors, candidatesOutArray, checkMode, SignatureFlagsNone, nil)
@@ -9321,7 +9321,7 @@ func (c *Checker) invocationErrorDetails(errorTarget *ast.Node, apparentType *Ty
 					diagnostic = NewDiagnosticChainForNode(diagnostic, target, core.IfElse(isCall, diagnostics.Not_all_constituents_of_type_0_are_callable, diagnostics.Not_all_constituents_of_type_0_are_constructable), c.TypeToString(apparentType))
 				}
 				if hasSignatures {
-					// Bail early if we already found a siganture, no chance of "No constituent of type is callable"
+					// Bail early if we already found a signature, no chance of "No constituent of type is callable"
 					break
 				}
 			}
@@ -11424,7 +11424,7 @@ func (c *Checker) checkThisInStaticClassFieldInitializerInDecoratedClass(thisExp
 
 func (c *Checker) checkThisBeforeSuper(node *ast.Node, container *ast.Node, diagnosticMessage *diagnostics.Message) {
 	containingClassDecl := container.Parent
-	baseTypeNode := getExtendsTypeNode(containingClassDecl)
+	baseTypeNode := ast.GetExtendsHeritageClauseElement(containingClassDecl)
 	// If a containing class does not have extends clause or the class extends null
 	// skip checking whether super statement is called before "this" accessing.
 	if baseTypeNode != nil && !c.classDeclarationExtendsNull(containingClassDecl) {
@@ -14066,7 +14066,7 @@ func (c *Checker) resolveExternalModule(location *ast.Node, moduleReference stri
 	if ambientModule != nil {
 		return ambientModule
 	}
-	// !!! The following only implements simple module resoltion
+	// !!! The following only implements simple module resolution
 	sourceFile := c.program.GetResolvedModule(ast.GetSourceFileOfNode(location), moduleReference)
 	if sourceFile != nil {
 		if sourceFile.Symbol != nil {
@@ -15742,7 +15742,7 @@ func (c *Checker) isThislessInterface(symbol *ast.Symbol) bool {
 			if declaration.Flags&ast.NodeFlagsContainsThis != 0 {
 				return false
 			}
-			baseTypeNodes := getExtendsTypeNodes(declaration)
+			baseTypeNodes := ast.GetExtendsHeritageClauseElements(declaration)
 			for _, node := range baseTypeNodes {
 				if ast.IsEntityNameExpression(node.Expression()) {
 					baseSymbol := c.resolveEntityName(node.Expression(), ast.SymbolFlagsType, true /*ignoreErrors*/, false, nil)
@@ -15767,19 +15767,31 @@ var base64chars = []byte{
 	'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '$', '%',
 }
 
-func (b *KeyBuilder) WriteInt(value int) {
+func (b *KeyBuilder) WriteUint64(value uint64) {
 	for value != 0 {
 		b.WriteByte(base64chars[value&0x3F])
 		value >>= 6
 	}
 }
 
+func (b *KeyBuilder) WriteInt(value int) {
+	b.WriteUint64(uint64(int64(value)))
+}
+
+func (b *KeyBuilder) WriteSymbolId(id ast.SymbolId) {
+	b.WriteUint64(uint64(id))
+}
+
 func (b *KeyBuilder) WriteSymbol(s *ast.Symbol) {
-	b.WriteInt(int(ast.GetSymbolId(s)))
+	b.WriteSymbolId(ast.GetSymbolId(s))
+}
+
+func (b *KeyBuilder) WriteTypeId(id TypeId) {
+	b.WriteUint64(uint64(id))
 }
 
 func (b *KeyBuilder) WriteType(t *Type) {
-	b.WriteInt(int(t.id))
+	b.WriteTypeId(t.id)
 }
 
 func (b *KeyBuilder) WriteTypes(types []*Type) {
@@ -15794,7 +15806,7 @@ func (b *KeyBuilder) WriteTypes(types []*Type) {
 		if tail {
 			b.WriteByte(',')
 		}
-		b.WriteInt(int(startId))
+		b.WriteTypeId(startId)
 		if count > 1 {
 			b.WriteByte(':')
 			b.WriteInt(count)
@@ -15852,9 +15864,13 @@ func (b *KeyBuilder) WriteGenericTypeReferences(source *Type, target *Type, igno
 	return constrained
 }
 
+func (b *KeyBuilder) WriteNodeId(id ast.NodeId) {
+	b.WriteUint64(uint64(id))
+}
+
 func (b *KeyBuilder) WriteNode(node *ast.Node) {
 	if node != nil {
-		b.WriteInt(int(ast.GetNodeId(node)))
+		b.WriteNodeId(ast.GetNodeId(node))
 	}
 }
 
@@ -15919,7 +15935,7 @@ func getTupleKey(elementInfos []TupleElementInfo, readonly bool) string {
 			b.WriteByte('*')
 		}
 		if e.labeledDeclaration != nil {
-			b.WriteInt(int(ast.GetNodeId(e.labeledDeclaration)))
+			b.WriteNode(e.labeledDeclaration)
 		}
 	}
 	if readonly {
@@ -15948,7 +15964,7 @@ func getIndexedAccessKey(objectType *Type, indexType *Type, accessFlags AccessFl
 	b.WriteByte(',')
 	b.WriteType(indexType)
 	b.WriteByte(',')
-	b.WriteInt(int(accessFlags))
+	b.WriteUint64(uint64(accessFlags))
 	b.WriteAlias(alias)
 	return b.String()
 }
@@ -15995,7 +16011,7 @@ func getRelationKey(source *Type, target *Type, intersectionState IntersectionSt
 	}
 	if intersectionState != IntersectionStateNone {
 		b.WriteByte(':')
-		b.WriteInt(int(intersectionState))
+		b.WriteUint64(uint64(intersectionState))
 	}
 	if constrained {
 		// We mark keys with type references that reference constrained type parameters such that we know
@@ -17439,7 +17455,7 @@ func (c *Checker) resolveBaseTypesOfClass(t *Type) {
 func getBaseTypeNodeOfClass(t *Type) *ast.Node {
 	decl := getClassLikeDeclarationOfSymbol(t.symbol)
 	if decl != nil {
-		return getExtendsTypeNode(decl)
+		return ast.GetExtendsHeritageClauseElement(decl)
 	}
 	return nil
 }
@@ -17673,7 +17689,7 @@ func (c *Checker) resolveBaseTypesOfInterface(t *Type) {
 	data := t.AsInterfaceType()
 	for _, declaration := range t.symbol.Declarations {
 		if ast.IsInterfaceDeclaration(declaration) {
-			for _, node := range getExtendsTypeNodes(declaration) {
+			for _, node := range ast.GetExtendsHeritageClauseElements(declaration) {
 				baseType := c.getReducedType(c.getTypeFromTypeNode(node))
 				if !c.isErrorType(baseType) {
 					if c.isValidBaseType(baseType) {
@@ -22301,7 +22317,7 @@ func (c *Checker) getConditionalType(root *ConditionalRoot, mapper *TypeMapper, 
 				// types rules (i.e. proper contravariance) for inferences.
 				c.inferTypes(context.inferences, checkType, extendsType, InferencePriorityNoConstraints|InferencePriorityAlwaysStrict, false)
 			}
-			// It's possible for 'infer T' type paramteters to be given uninstantiated constraints when the
+			// It's possible for 'infer T' type parameters to be given uninstantiated constraints when the
 			// those type parameters are used in type references (see getInferredTypeParameterConstraint). For
 			// that reason we need context.mapper to be first in the combined mapper. See #42636 for examples.
 			if mapper != nil {
@@ -24843,7 +24859,7 @@ func (c *Checker) getIndexedAccessTypeOrUndefined(objectType *Type, indexType *T
 			if propType != nil {
 				propTypes = append(propTypes, propType)
 			} else if accessNode == nil {
-				// If there's no error node, we can immeditely stop, since error reporting is off
+				// If there's no error node, we can immediately stop, since error reporting is off
 				return nil
 			} else {
 				// Otherwise we set a flag and return at the end of the loop so we still mark all errors
@@ -25124,7 +25140,7 @@ func (c *Checker) isSelfTypeAccess(name *ast.Node, parent *ast.Symbol) bool {
 
 func (c *Checker) isAssignmentToReadonlyEntity(expr *ast.Node, symbol *ast.Symbol, assignmentKind AssignmentKind) bool {
 	if assignmentKind == AssignmentKindNone {
-		// no assigment means it doesn't matter whether the entity is readonly
+		// no assignment means it doesn't matter whether the entity is readonly
 		return false
 	}
 	if c.isReadonlySymbol(symbol) {
@@ -25911,7 +25927,7 @@ func (c *Checker) transformTypeOfMembers(t *Type, f func(propertyType *Type) *Ty
 }
 
 func (c *Checker) markLinkedReferences(location *ast.Node, hint ReferenceHint, propSymbol *ast.Symbol, parentType *Type) {
-	if !c.canCollectSymbolAliasAccessabilityData {
+	if !c.canCollectSymbolAliasAccessibilityData {
 		return
 	}
 	if location.Flags&ast.NodeFlagsAmbient != 0 && !ast.IsPropertySignatureDeclaration(location) && !ast.IsPropertyDeclaration(location) {
@@ -26119,7 +26135,7 @@ func (c *Checker) markPropertyAliasReferenced(location *ast.Node /*PropertyAcces
 	}
 }
 
-func (c *Checker) markExportAssignmentAliasReferenced(location *ast.Node /*ExportAssigment*/) {
+func (c *Checker) markExportAssignmentAliasReferenced(location *ast.Node /*ExportAssignment*/) {
 	id := location.Expression()
 	if ast.IsIdentifier(id) {
 		sym := c.getExportSymbolOfValueSymbolIfExported(c.resolveEntityName(id, ast.SymbolFlagsAll, true /*ignoreErrors*/, true /*dontResolveAlias*/, location))
@@ -26169,7 +26185,7 @@ func (c *Checker) markDecoratorAliasReferenced(node *ast.Node /*HasDecorators*/)
 }
 
 func (c *Checker) markAliasReferenced(symbol *ast.Symbol, location *ast.Node) {
-	if !c.canCollectSymbolAliasAccessabilityData {
+	if !c.canCollectSymbolAliasAccessibilityData {
 		return
 	}
 	if ast.IsNonLocalAlias(symbol, ast.SymbolFlagsValue /*excludes*/) && !isInTypeQuery(location) {
@@ -26233,7 +26249,7 @@ func (c *Checker) markEntityNameOrEntityExpressionAsReference(typeName *ast.Node
 	rootSymbol := c.resolveName(rootName, rootName.Text(), meaning, nil /*nameNotFoundMessage*/, true /*isUse*/, false /*excludeGlobals*/)
 
 	if rootSymbol != nil && rootSymbol.Flags&ast.SymbolFlagsAlias != 0 {
-		if c.canCollectSymbolAliasAccessabilityData &&
+		if c.canCollectSymbolAliasAccessibilityData &&
 			c.symbolIsValue(rootSymbol) &&
 			!isConstEnumOrConstEnumOnlyModule(c.resolveAlias(rootSymbol)) &&
 			c.getTypeOnlyAliasDeclaration(rootSymbol) == nil {

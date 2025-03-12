@@ -38,11 +38,11 @@ linters:
     - predeclared
     - reassign
     - staticcheck
-    - tenv
     - testableexamples
     - tparallel
     - unconvert
     - usestdlibvars
+    - usetesting
     - whitespace
 
     - customlint

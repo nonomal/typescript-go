@@ -76,12 +76,12 @@ func (vfs *osFS) UseCaseSensitiveFileNames() bool {
 	return isFileSystemCaseSensitive
 }
 
-var openFileSema = make(chan struct{}, 128)
+var readSema = make(chan struct{}, 128)
 
 func (vfs *osFS) ReadFile(path string) (contents string, ok bool) {
 	// Limit ourselves to fewer open files, which greatly reduces IO contention.
-	openFileSema <- struct{}{}
-	defer func() { <-openFileSema }()
+	readSema <- struct{}{}
+	defer func() { <-readSema }()
 
 	return vfs.common.ReadFile(path)
 }
@@ -126,12 +126,11 @@ func osFSRealpath(path string) string {
 	return tspath.NormalizeSlashes(path)
 }
 
+var writeSema = make(chan struct{}, 32)
+
 func (vfs *osFS) writeFile(path string, content string, writeByteOrderMark bool) error {
-	if runtime.GOOS == "darwin" {
-		// macOS appears to struggle with contention on file creation; gate this on the semaphore too.
-		openFileSema <- struct{}{}
-		defer func() { <-openFileSema }()
-	}
+	writeSema <- struct{}{}
+	defer func() { <-writeSema }()
 
 	file, err := os.Create(path)
 	if err != nil {

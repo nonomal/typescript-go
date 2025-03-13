@@ -76,11 +76,11 @@ func (vfs *osFS) UseCaseSensitiveFileNames() bool {
 	return isFileSystemCaseSensitive
 }
 
-var osReadSema = make(chan struct{}, 128)
+var openFileSema = make(chan struct{}, 128)
 
 func (vfs *osFS) ReadFile(path string) (contents string, ok bool) {
-	osReadSema <- struct{}{}
-	defer func() { <-osReadSema }()
+	openFileSema <- struct{}{}
+	defer func() { <-openFileSema }()
 
 	return vfs.common.ReadFile(path)
 }
@@ -128,8 +128,8 @@ func osFSRealpath(path string) string {
 func (vfs *osFS) writeFile(path string, content string, writeByteOrderMark bool) error {
 	if runtime.GOOS == "darwin" {
 		// macOS appears to struggle with contention on file creation; gate this on the semaphore too.
-		osReadSema <- struct{}{}
-		defer func() { <-osReadSema }()
+		openFileSema <- struct{}{}
+		defer func() { <-openFileSema }()
 	}
 
 	file, err := os.Create(path)

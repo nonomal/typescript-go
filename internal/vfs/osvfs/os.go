@@ -79,6 +79,7 @@ func (vfs *osFS) UseCaseSensitiveFileNames() bool {
 var openFileSema = make(chan struct{}, 128)
 
 func (vfs *osFS) ReadFile(path string) (contents string, ok bool) {
+	// Limit ourselves to fewer open files, which greatly reduces IO contention.
 	openFileSema <- struct{}{}
 	defer func() { <-openFileSema }()
 

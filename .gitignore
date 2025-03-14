@@ -187,3 +187,8 @@ custom-gcl.exe
 custom-gcl.hash
 
 /built
+
+# macOS Finder metadata
+.DS_Store
+
+.idea

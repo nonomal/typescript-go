@@ -318,6 +318,9 @@ export const lint = task({
         if (isCI) {
             lintArgs.push("--timeout=5m");
         }
+        if (defaultGoBuildTags.length) {
+            lintArgs.push("--build-tags", defaultGoBuildTags.join(","));
+        }
         if (options.fix) {
             lintArgs.push("--fix");
         }

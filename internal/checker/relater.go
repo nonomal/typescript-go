@@ -4755,12 +4755,7 @@ func (r *Relater) reportError(message *diagnostics.Message, args ...any) {
 			diagnostics.The_types_returned_by_0_are_incompatible_between_these_types:
 			head := getPropertyNameArg(args[0])
 			tail := getPropertyNameArg(r.errorChain.next.args[0])
-			var arg string
-			if len(tail) != 0 && tail[0] == '[' {
-				arg = head + tail
-			} else {
-				arg = head + "." + tail
-			}
+			arg := addToDottedName(head, tail)
 			r.errorChain = r.errorChain.next.next
 			if message == diagnostics.Types_of_property_0_are_incompatible {
 				message = diagnostics.The_types_of_0_are_incompatible_between_these_types
@@ -4770,6 +4765,28 @@ func (r *Relater) reportError(message *diagnostics.Message, args ...any) {
 		}
 	}
 	r.errorChain = &ErrorChain{next: r.errorChain, message: message, args: args}
+}
+
+func addToDottedName(head string, tail string) string {
+	if strings.HasPrefix(head, "new ") {
+		head = "(" + head + ")"
+	}
+	pos := 0
+	for {
+		if strings.HasPrefix(tail[pos:], "(") {
+			pos++
+		} else if strings.HasPrefix(tail[pos:], "new ") {
+			pos += 4
+		} else {
+			break
+		}
+	}
+	prefix := tail[:pos]
+	suffix := tail[pos:]
+	if strings.HasPrefix(suffix, "[") {
+		return prefix + head + suffix
+	}
+	return prefix + head + "." + suffix
 }
 
 func (r *Relater) getChainMessage(index int) *diagnostics.Message {

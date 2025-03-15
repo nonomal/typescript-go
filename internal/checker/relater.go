@@ -4265,18 +4265,20 @@ func (r *Relater) reportUnmatchedProperty(source *Type, target *Type, unmatchedP
 	}
 	props := r.c.getUnmatchedProperties(source, target, requireOptionalProperties, false /*matchDiscriminantProperties*/)
 	if len(props) == 1 {
+		sourceType, targetType := r.c.getTypeNamesForErrorDisplay(source, target)
 		propName := r.c.symbolToString(unmatchedProperty)
-		r.reportError(diagnostics.Property_0_is_missing_in_type_1_but_required_in_type_2, propName, r.c.TypeToString(source), r.c.TypeToString(target))
+		r.reportError(diagnostics.Property_0_is_missing_in_type_1_but_required_in_type_2, propName, sourceType, targetType)
 		if len(unmatchedProperty.Declarations) != 0 {
 			r.relatedInfo = append(r.relatedInfo, createDiagnosticForNode(unmatchedProperty.Declarations[0], diagnostics.X_0_is_declared_here, propName))
 		}
 	} else if r.tryElaborateArrayLikeErrors(source, target, false /*reportErrors*/) {
+		sourceType, targetType := r.c.getTypeNamesForErrorDisplay(source, target)
 		if len(props) > 5 {
 			propNames := strings.Join(core.Map(props[:4], r.c.symbolToString), ", ")
-			r.reportError(diagnostics.Type_0_is_missing_the_following_properties_from_type_1_Colon_2_and_3_more, r.c.TypeToString(source), r.c.TypeToString(target), propNames, len(props)-4)
+			r.reportError(diagnostics.Type_0_is_missing_the_following_properties_from_type_1_Colon_2_and_3_more, sourceType, targetType, propNames, len(props)-4)
 		} else {
 			propNames := strings.Join(core.Map(props, r.c.symbolToString), ", ")
-			r.reportError(diagnostics.Type_0_is_missing_the_following_properties_from_type_1_Colon_2, r.c.TypeToString(source), r.c.TypeToString(target), propNames)
+			r.reportError(diagnostics.Type_0_is_missing_the_following_properties_from_type_1_Colon_2, sourceType, targetType, propNames)
 		}
 	}
 }

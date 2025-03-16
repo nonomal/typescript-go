@@ -10448,7 +10448,7 @@ func (c *Checker) checkPropertyAccessChain(node *ast.Node, checkMode CheckMode) 
 }
 
 func (c *Checker) checkPropertyAccessExpressionOrQualifiedName(node *ast.Node, left *ast.Node, leftType *Type, right *ast.Node, checkMode CheckMode, writeOnly bool) *Type {
-	parentSymbol := c.typeNodeLinks.Get(node).resolvedSymbol
+	parentSymbol := c.typeNodeLinks.Get(left).resolvedSymbol
 	assignmentKind := getAssignmentTargetKind(node)
 	widenedType := leftType
 	if assignmentKind != AssignmentKindNone || c.isMethodAccessForCall(node) {

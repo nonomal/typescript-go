@@ -2170,6 +2170,8 @@ func (c *Checker) checkSourceElementWorker(node *ast.Node) {
 		c.checkTypeAliasDeclaration(node)
 	case ast.KindEnumDeclaration:
 		c.checkEnumDeclaration(node)
+	case ast.KindEnumMember:
+		c.checkEnumMember(node)
 	case ast.KindModuleDeclaration:
 		c.checkModuleDeclaration(node)
 	case ast.KindImportDeclaration:
@@ -4707,6 +4709,15 @@ func (c *Checker) checkEnumDeclaration(node *ast.Node) {
 				}
 			}
 		}
+	}
+}
+
+func (c *Checker) checkEnumMember(node *ast.Node) {
+	if ast.IsPrivateIdentifier(node.Name()) {
+		c.error(node, diagnostics.An_enum_member_cannot_be_named_with_a_private_identifier)
+	}
+	if node.Initializer() != nil {
+		c.checkExpression(node.Initializer())
 	}
 }
 
@@ -11520,7 +11531,10 @@ func (c *Checker) checkBinaryLikeExpression(left *ast.Node, operatorToken *ast.N
 				ast.KindGreaterThanGreaterThanGreaterThanEqualsToken:
 				rhsEval := c.evaluate(right, right)
 				if numValue, ok := rhsEval.value.(jsnum.Number); ok && numValue.Abs() >= 32 {
-					c.errorOrSuggestion(ast.IsEnumMember(ast.WalkUpParenthesizedExpressions(right.Parent.Parent)), errorNode, diagnostics.This_operation_can_be_simplified_This_shift_is_identical_to_0_1_2, scanner.GetTextOfNode(left), scanner.TokenToString(operator), (numValue / 32).Floor())
+					// Adding 0 removes sign from -0
+					shiftMod32 := math.Mod(float64(numValue), 32) + 0
+					// Elevate from suggestion to error within an enum member
+					c.errorOrSuggestion(ast.IsEnumMember(ast.WalkUpParenthesizedExpressions(right.Parent.Parent)), errorNode, diagnostics.This_operation_can_be_simplified_This_shift_is_identical_to_0_1_2, scanner.GetTextOfNode(left), scanner.TokenToString(operator), shiftMod32)
 				}
 			}
 		}

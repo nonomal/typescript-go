@@ -21884,6 +21884,7 @@ func (c *Checker) createComputedEnumType(symbol *ast.Symbol) *Type {
 	freshType := c.newLiteralType(TypeFlagsEnum, nil, regularType)
 	freshType.symbol = symbol
 	regularType.AsLiteralType().freshType = freshType
+	freshType.AsLiteralType().freshType = freshType
 	return regularType
 }
 

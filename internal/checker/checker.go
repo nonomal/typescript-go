@@ -8024,7 +8024,7 @@ func (c *Checker) isConstructorAccessible(node *ast.Node, signature *Signature) 
 	declaration := signature.declaration
 	modifiers := getSelectedEffectiveModifierFlags(declaration, ast.ModifierFlagsNonPublicAccessibilityModifier)
 	// (1) Public constructors and (2) constructor functions are always accessible.
-	if modifiers == 0 || ast.IsConstructorDeclaration(declaration) {
+	if modifiers == 0 || !ast.IsConstructorDeclaration(declaration) {
 		return true
 	}
 	declaringClassDeclaration := getClassLikeDeclarationOfSymbol(declaration.Parent.Symbol())

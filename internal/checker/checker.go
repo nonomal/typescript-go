@@ -740,7 +740,7 @@ type Checker struct {
 	reverseMappedSourceStack                  []*Type
 	reverseMappedTargetStack                  []*Type
 	reverseExpandingFlags                     ExpandingFlags
-	relaters                                  []Relater
+	freeRelater                               *Relater
 	subtypeRelation                           *Relation
 	strictSubtypeRelation                     *Relation
 	assignableRelation                        *Relation

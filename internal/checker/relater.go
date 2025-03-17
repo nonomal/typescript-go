@@ -365,10 +365,12 @@ func (c *Checker) checkTypeRelatedToEx(
 	headMessage *diagnostics.Message,
 	diagnosticOutput *[]*ast.Diagnostic,
 ) bool {
-	relaterCount := len(c.relaters)
-	c.relaters = slices.Grow(c.relaters, 1)[:relaterCount+1]
-	r := &c.relaters[relaterCount]
-	r.c = c
+	r := c.freeRelater
+	if r == nil {
+		r = &Relater{c: c}
+	} else {
+		c.freeRelater = r.next
+	}
 	r.relation = relation
 	r.errorNode = errorNode
 	r.relationCount = (16_000_000 - relation.size()) / 8
@@ -396,14 +398,16 @@ func (c *Checker) checkTypeRelatedToEx(
 		}
 		c.reportDiagnostic(createDiagnosticChainFromErrorChain(r.errorChain, r.errorNode, r.relatedInfo), diagnosticOutput)
 	}
-	c.relaters = c.relaters[:relaterCount]
 	r.maybeKeysSet.Clear()
 	*r = Relater{
+		c:            c,
 		maybeKeys:    r.maybeKeys[:0],
 		maybeKeysSet: r.maybeKeysSet,
 		sourceStack:  r.sourceStack[:0],
 		targetStack:  r.targetStack[:0],
+		next:         c.freeRelater,
 	}
+	c.freeRelater = r
 	return result != TernaryFalse
 }
 
@@ -2521,6 +2525,7 @@ type Relater struct {
 	expandingFlags ExpandingFlags
 	overflow       bool
 	relationCount  int
+	next           *Relater
 }
 
 func (r *Relater) isRelatedToSimple(source *Type, target *Type) Ternary {

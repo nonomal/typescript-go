@@ -106,16 +106,6 @@
  
  // Additional repro from #57487
  
- const arr = ["foo", "12", 42] as const;
-->arr : readonly ["foo", "12", 42]
-->["foo", "12", 42] as const : readonly ["foo", "12", 42]
-->["foo", "12", 42] : readonly ["foo", "12", 42]
-+>arr : ["foo", "12", 42]
-+>["foo", "12", 42] as const : ["foo", "12", 42]
-+>["foo", "12", 42] : ["foo", "12", 42]
- >"foo" : "foo"
- >"12" : "12"
- >42 : 42
 @@= skipped -32, +33 lines =@@
  
  type MapperArgs<K extends (typeof arr)[number]> = {

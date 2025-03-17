@@ -25,7 +25,7 @@
  
  declare function createZodEnum<U extends string, T extends Readonly<[U, ...U[]]>>(values: T): ZodEnum<Writeable<T>>;
 ->createZodEnum : <U extends string, T extends Readonly<[U, ...U[]]>>(values: T) => ZodEnum<Writeable<T>>
-+>createZodEnum : <U extends string, T extends [U, ...U[]]>(values: T) => ZodEnum<Writeable<T>>
++>createZodEnum : <U extends string, T extends readonly [U, ...U[]]>(values: T) => ZodEnum<Writeable<T>>
 +>U : U
 +>T : T
  >values : T

@@ -23,13 +23,6 @@
  
  type T50 = Readonly<string[]>;
  >T50 : readonly string[]
- 
- type T51 = Readonly<[number, number]>;
-->T51 : readonly [number, number]
-+>T51 : [number, number]
- 
- type T52 = Partial<Readonly<string[]>>;
- >T52 : readonly (string | undefined)[]
 @@= skipped -18, +20 lines =@@
  
  declare function unboxify<T>(x: Boxified<T>): T;

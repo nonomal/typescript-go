@@ -27,21 +27,9 @@
  >values : [T1[], T2[]]
  
  declare function f2<T1, T2>(values: readonly [T1[], T2[]]): T1;
-->f2 : <T1, T2>(values: readonly [T1[], T2[]]) => T1
-->values : readonly [T1[], T2[]]
-+>f2 : <T1, T2>(values: [T1[], T2[]]) => T1
+ >f2 : <T1, T2>(values: readonly [T1[], T2[]]) => T1
 +>T1 : T1
 +>T2 : T2
-+>values : [T1[], T2[]]
+ >values : readonly [T1[], T2[]]
  
  let expected: "a";
- >expected : "a"
-@@= skipped -21, +25 lines =@@
- >expected = f2(undefined as ["a"[], "b"[]]) : "a"
- >expected : "a"
- >f2(undefined as ["a"[], "b"[]]) : "a"
-->f2 : <T1, T2>(values: readonly [T1[], T2[]]) => T1
-+>f2 : <T1, T2>(values: [T1[], T2[]]) => T1
- >undefined as ["a"[], "b"[]] : ["a"[], "b"[]]
- >undefined : undefined
- 

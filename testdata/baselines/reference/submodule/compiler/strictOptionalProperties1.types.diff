@@ -396,26 +396,16 @@
  >[42, undefined, true] : [number, undefined, true]
  >42 : 42
  >undefined : undefined
-@@= skipped -105, +105 lines =@@
- >f6 : () => void
- 
-     const t1 = [1, 2] as const;
-->t1 : readonly [1, 2]
-->[1, 2] as const : readonly [1, 2]
-->[1, 2] : readonly [1, 2]
-+>t1 : [1, 2]
-+>[1, 2] as const : [1, 2]
-+>[1, 2] : [1, 2]
- >1 : 1
+@@= skipped -112, +112 lines =@@
  >2 : 2
  
      const t2 = [1, 2, ,] as const;
 ->t2 : readonly [1, 2, never?]
 ->[1, 2, ,] as const : readonly [1, 2, never?]
 ->[1, 2, ,] : readonly [1, 2, never?]
-+>t2 : [1, 2, undefined?]
-+>[1, 2, ,] as const : [1, 2, undefined?]
-+>[1, 2, ,] : [1, 2, undefined?]
++>t2 : readonly [1, 2, undefined?]
++>[1, 2, ,] as const : readonly [1, 2, undefined?]
++>[1, 2, ,] : readonly [1, 2, undefined?]
  >1 : 1
  >2 : 2
  > : undefined
@@ -424,9 +414,9 @@
 ->t3 : readonly [1, 2, never?, never?]
 ->[1, 2, , ,] as const : readonly [1, 2, never?, never?]
 ->[1, 2, , ,] : readonly [1, 2, never?, never?]
-+>t3 : [1, 2, undefined?, undefined?]
-+>[1, 2, , ,] as const : [1, 2, undefined?, undefined?]
-+>[1, 2, , ,] : [1, 2, undefined?, undefined?]
++>t3 : readonly [1, 2, undefined?, undefined?]
++>[1, 2, , ,] as const : readonly [1, 2, undefined?, undefined?]
++>[1, 2, , ,] : readonly [1, 2, undefined?, undefined?]
  >1 : 1
  >2 : 2
  > : undefined
@@ -436,9 +426,9 @@
 ->t4 : readonly [1, never?, 2?]
 ->[1, , 2] as const : readonly [1, never?, 2?]
 ->[1, , 2] : readonly [1, never?, 2?]
-+>t4 : [1, undefined?, (2 | undefined)?]
-+>[1, , 2] as const : [1, undefined?, (2 | undefined)?]
-+>[1, , 2] : [1, undefined?, (2 | undefined)?]
++>t4 : readonly [1, undefined?, (2 | undefined)?]
++>[1, , 2] as const : readonly [1, undefined?, (2 | undefined)?]
++>[1, , 2] : readonly [1, undefined?, (2 | undefined)?]
  >1 : 1
  > : undefined
  >2 : 2
@@ -447,13 +437,13 @@
 ->t5 : readonly [1, never?, never?, 2?]
 ->[1, , , 2] as const : readonly [1, never?, never?, 2?]
 ->[1, , , 2] : readonly [1, never?, never?, 2?]
-+>t5 : [1, undefined?, undefined?, (2 | undefined)?]
-+>[1, , , 2] as const : [1, undefined?, undefined?, (2 | undefined)?]
-+>[1, , , 2] : [1, undefined?, undefined?, (2 | undefined)?]
++>t5 : readonly [1, undefined?, undefined?, (2 | undefined)?]
++>[1, , , 2] as const : readonly [1, undefined?, undefined?, (2 | undefined)?]
++>[1, , , 2] : readonly [1, undefined?, undefined?, (2 | undefined)?]
  >1 : 1
  > : undefined
  > : undefined
-@@= skipped -86, +86 lines =@@
+@@= skipped -79, +79 lines =@@
  // Example from #13195
  
  const t1: [number, string?, boolean?] = [1];

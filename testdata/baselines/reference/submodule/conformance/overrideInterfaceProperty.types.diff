@@ -19,7 +19,7 @@
 ->entries : readonly (readonly [K, V])[]
 +>K : K
 +>V : V
-+>entries : readonly [K, V][]
++>entries : readonly readonly [K, V][]
  
      readonly prototype: Mup<any, any>;
  >prototype : Mup<any, any>

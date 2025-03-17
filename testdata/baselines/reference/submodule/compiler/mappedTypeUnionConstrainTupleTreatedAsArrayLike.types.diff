@@ -14,12 +14,10 @@
  >args : T
  
    const arr: any[] = [] as HomomorphicMappedType<T>
-@@= skipped -17, +20 lines =@@
- }
+@@= skipped -18, +21 lines =@@
  
  function test2<T extends [number] | readonly [string]>(args: T) {
-->test2 : <T extends [number] | readonly [string]>(args: T) => void
-+>test2 : <T extends [number] | [string]>(args: T) => void
+ >test2 : <T extends [number] | readonly [string]>(args: T) => void
 +>T : T
  >args : T
  

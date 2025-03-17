@@ -311,7 +311,7 @@ func (p *Printer) printTypeReference(t *Type) {
 func (p *Printer) printTypeArguments(typeArguments []*Type) {
 	if len(typeArguments) != 0 {
 		p.print("<")
-		tail := false
+		var tail bool
 		for _, t := range typeArguments {
 			if tail {
 				p.print(", ")
@@ -333,10 +333,13 @@ func (p *Printer) printArrayType(t *Type) {
 }
 
 func (p *Printer) printTupleType(t *Type) {
-	tail := false
+	if t.TargetTupleType().readonly {
+		p.print("readonly ")
+	}
 	p.print("[")
 	elementInfos := t.TargetTupleType().elementInfos
 	typeArguments := p.c.getTypeArguments(t)
+	var tail bool
 	for i, info := range elementInfos {
 		t := typeArguments[i]
 		if tail {

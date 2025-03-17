@@ -63,10 +63,6 @@ linters-settings:
     customlint:
       type: module
 
-  wrapcheck:
-    ignorePackageGlobs:
-      - encoding/*
-      - github.com/go-json-experiment/*
 
   gocritic:
     enabled-checks:

@@ -19336,7 +19336,7 @@ func (c *Checker) combineUnionOrIntersectionMemberSignatures(left *Signature, ri
 	} else {
 		leftSignatures = []*Signature{left}
 	}
-	result.composite = &CompositeSignature{isUnion: true, signatures: append(leftSignatures, right)}
+	result.composite = &CompositeSignature{isUnion: isUnion, signatures: append(leftSignatures, right)}
 	if paramMapper != nil {
 		if left.composite != nil && left.composite.isUnion == isUnion && left.mapper != nil {
 			result.mapper = c.combineTypeMappers(left.mapper, paramMapper)

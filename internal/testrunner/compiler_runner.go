@@ -88,9 +88,7 @@ func (r *CompilerBaselineRunner) EnumerateTestFiles() []string {
 func (r *CompilerBaselineRunner) RunTests(t *testing.T) {
 	r.cleanUpLocal(t)
 	files := r.EnumerateTestFiles()
-	skippedTests := []string{
-		"mappedTypeRecursiveInference.ts", // Needed until we have type printer with truncation limit.
-	}
+	skippedTests := []string{}
 	deprecatedTests := []string{
 		// Test deprecated `importsNotUsedAsValue`
 		"preserveUnusedImports.ts",

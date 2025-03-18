@@ -16457,7 +16457,7 @@ func (c *Checker) getWidenedTypeForAssignmentDeclaration(symbol *ast.Symbol) *Ty
 	var types []*Type
 	for _, declaration := range symbol.Declarations {
 		if ast.IsBinaryExpression(declaration) {
-			types = core.AppendIfUnique(types, c.getWidenedLiteralType(c.checkExpressionCached(declaration.AsBinaryExpression().Right)))
+			types = core.AppendIfUnique(types, c.checkExpressionForMutableLocation(declaration.AsBinaryExpression().Right, CheckModeNormal))
 		}
 	}
 	return c.getWidenedType(c.getUnionType(types))
@@ -27227,7 +27227,7 @@ func (c *Checker) getContextualTypeForBinaryOperand(node *ast.Node, contextFlags
 	case ast.KindEqualsToken, ast.KindAmpersandAmpersandEqualsToken, ast.KindBarBarEqualsToken, ast.KindQuestionQuestionEqualsToken:
 		// In an assignment expression, the right operand is contextually typed by the type of the left operand.
 		// If the binary operator has a symbol, this is an assignment declaration and there is no contextual type.
-		if node == binary.Right && binary.Symbol == nil {
+		if node == binary.Right && (binary.Symbol == nil || c.canGetContextualTypeForAssignmentDeclaration(binary.Left)) {
 			return c.getContextualTypeFromAssignmentTarget(binary.Left)
 		}
 	case ast.KindBarBarToken, ast.KindQuestionQuestionToken:
@@ -27247,6 +27247,15 @@ func (c *Checker) getContextualTypeForBinaryOperand(node *ast.Node, contextFlags
 		}
 	}
 	return nil
+}
+
+func (c *Checker) canGetContextualTypeForAssignmentDeclaration(node *ast.Node) bool {
+	// Node is the left operand of an assignment declaration (a binary expression with a symbol assigned by the
+	// binder) of the form 'F.id = expr' or 'F[xxx] = expr'. If 'F' is declared as a variable with a type annotation,
+	// we can obtain a contextual type from the annotated type without triggering a circularity. Otherwise, the
+	// assignment declaration has no contextual type.
+	symbol := c.getResolvedSymbol(node.Expression())
+	return symbol.ValueDeclaration != nil && ast.IsVariableDeclaration(symbol.ValueDeclaration) && symbol.ValueDeclaration.Type() != nil
 }
 
 func (c *Checker) getContextualTypeFromAssignmentTarget(node *ast.Node) *Type {

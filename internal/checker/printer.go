@@ -351,18 +351,20 @@ func (p *Printer) printTupleType(t *Type) {
 		if info.labeledDeclaration != nil {
 			p.print(info.labeledDeclaration.Name().Text())
 			if info.flags&ElementFlagsOptional != 0 {
-				p.print("?")
-			}
-			p.print(": ")
-			if info.flags&ElementFlagsRest != 0 {
-				p.printTypeEx(t, ast.TypePrecedencePostfix)
-				p.print("[]")
+				p.print("?: ")
+				p.printType(p.c.removeMissingType(t, true))
 			} else {
-				p.printType(t)
+				p.print(": ")
+				if info.flags&ElementFlagsRest != 0 {
+					p.printTypeEx(t, ast.TypePrecedencePostfix)
+					p.print("[]")
+				} else {
+					p.printType(t)
+				}
 			}
 		} else {
 			if info.flags&ElementFlagsOptional != 0 {
-				p.printTypeEx(t, ast.TypePrecedencePostfix)
+				p.printTypeEx(p.c.removeMissingType(t, true), ast.TypePrecedencePostfix)
 				p.print("?")
 			} else if info.flags&ElementFlagsRest != 0 {
 				p.printTypeEx(t, ast.TypePrecedencePostfix)
@@ -437,7 +439,7 @@ func (p *Printer) printAnonymousType(t *Type) {
 			p.print("?")
 		}
 		p.print(": ")
-		p.printType(p.c.getTypeOfSymbol(prop))
+		p.printType(p.c.getNonMissingTypeOfSymbol(prop))
 		p.print(";")
 		hasMembers = true
 	}

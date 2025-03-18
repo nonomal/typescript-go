@@ -14,7 +14,7 @@
  const foo: Foo = () => {};
  >foo : Foo
 ->() => {} : { (): void; [mySymbol]: true; }
-+>() => {} : { (): void; foo[mySymbol]: boolean; }
++>() => {} : { (): void; foo[mySymbol]: true; }
  
  foo[mySymbol] = true;
  >foo[mySymbol] = true : true
@@ -27,12 +27,3 @@
    (): void;
    test: true;
  >test : true
-@@= skipped -12, +14 lines =@@
- 
- const bar: Bar = () => {};
- >bar : Bar
-->() => {} : { (): void; test: true; }
-+>() => {} : { (): void; test: boolean; }
- 
- bar[t] = true;
- >bar[t] = true : true

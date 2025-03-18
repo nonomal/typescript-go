@@ -23535,6 +23535,9 @@ func (c *Checker) mapTypeEx(t *Type, f func(*Type) *Type, noReductions bool) *Ty
 		}
 	}
 	if changed {
+		if len(mappedTypes) == 0 {
+			return nil
+		}
 		return c.getUnionTypeEx(slices.Clone(mappedTypes), core.IfElse(noReductions, UnionReductionNone, UnionReductionLiteral), nil /*alias*/, nil /*origin*/)
 	}
 	return t

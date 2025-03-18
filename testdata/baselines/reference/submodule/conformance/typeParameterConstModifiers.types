@@ -53,8 +53,8 @@ const x21 = f2('a');
 >'a' : "a"
 
 const x22 = f2(['a', ['b', 'c']]);
->x22 : readonly ["a", ["b", "c"]]
->f2(['a', ['b', 'c']]) : readonly ["a", ["b", "c"]]
+>x22 : readonly ["a", readonly ["b", "c"]]
+>f2(['a', ['b', 'c']]) : readonly ["a", readonly ["b", "c"]]
 >f2 : <T, U>(x: T | undefined) => T
 >['a', ['b', 'c']] : ["a", ["b", "c"]]
 >'a' : "a"

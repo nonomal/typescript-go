@@ -75,21 +75,7 @@
  
      type2: 'y',
  >type2 : "y"
-@@= skipped -14, +14 lines =@@
- >method : () => void
- 
-         this;
-->this : X2 | Y2
-+>this : never
- 
-         this.value;
-->this.value : string
-->this : X2 | Y2
-->value : string
-+>this.value : any
-+>this : never
-+>value : any
-     }
+@@= skipped -24, +24 lines =@@
  });
  
  interface X3 {
@@ -98,7 +84,7 @@
      type: 'x';
  >type : "x"
  
-@@= skipped -21, +23 lines =@@
+@@= skipped -11, +13 lines =@@
  }
  
  interface Y3 {

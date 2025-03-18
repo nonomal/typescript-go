@@ -77,7 +77,7 @@
  
    [K in keyof T]: T[K];
  }): T;
- 
+@@= skipped -9, +9 lines =@@
  const result4 = test4(["1", 2]);
  >result4 : readonly ["1", 2]
  >test4(["1", 2]) : readonly ["1", 2]
@@ -97,8 +97,7 @@
  
      [K in keyof T]: T[K];
    }
- ): T;
- 
+@@= skipped -18, +18 lines =@@
  const result5 = test5({ a: "foo" });
  >result5 : readonly [{ readonly a: "foo"; }]
  >test5({ a: "foo" }) : readonly [{ readonly a: "foo"; }]

@@ -108,7 +108,7 @@ type Mappings = { foo: boolean, "12": number, 42: string };
 
 type MapperArgs<K extends (typeof arr)[number]> = {
 >MapperArgs : MapperArgs<K>
->arr : ["foo", "12", 42]
+>arr : readonly ["foo", "12", 42]
 
     v: K,
 >v : K

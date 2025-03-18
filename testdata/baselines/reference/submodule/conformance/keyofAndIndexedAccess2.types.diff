@@ -152,10 +152,7 @@
  >'abc' : "abc"
  }
  
-@@= skipped -48, +48 lines =@@
- // Repro from #32038
- 
-@@= skipped -22, +32 lines =@@
+@@= skipped -55, +55 lines =@@
  >'resizeBy' : "resizeBy"
  
  for (const action of actions) {
